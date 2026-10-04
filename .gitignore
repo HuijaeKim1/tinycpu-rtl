@@ -1,0 +1,15 @@
+# Simulation output
+*.vcd
+*.vvp
+*.fst
+
+# Build output
+build/
+obj_dir/
+
+# Temporary files
+*.log
+*.tmp
+
+# VS Code
+.vscode/
