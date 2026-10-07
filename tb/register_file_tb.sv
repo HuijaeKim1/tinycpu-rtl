@@ -82,6 +82,7 @@ module register_file_tb;
         if (read_data1 == 8'd42) begin
             $display("WRITE R2: PASS");
         end
+        
         else begin
             $display("WRITE R2: FAIL");
         end

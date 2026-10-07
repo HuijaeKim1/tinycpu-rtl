@@ -7,16 +7,16 @@ module alu (
 
     // behavior of alu
 
-always_comb begin
-    case(alu_op)
-        2'b00: result = a + b; 
+    always_comb begin
+        case(alu_op)
+            2'b00: result = a + b; 
 
-        2'b01: result = a - b;
+            2'b01: result = a - b;
 
-        2'b10: result = a & b;
+            2'b10: result = a & b;
 
-        2'b11: result = a | b;
-    endcase
-end
+            2'b11: result = a | b;
+        endcase
+    end
 
 endmodule

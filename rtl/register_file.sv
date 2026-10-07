@@ -13,28 +13,28 @@ module register_file(
 
 );
 
-logic [7:0] registers [0:3];
+    logic [7:0] registers [0:3];
 
-// sequential write logic
-// This block only runs at rising clock edge
-always_ff @(posedge clk) begin
+    // sequential write logic
+    // This block only runs at rising clock edge
+    always_ff @(posedge clk) begin
 
-    if (reset) begin    // reset the registers
-        registers[0] <= 0;
-        registers[1] <= 0;
-        registers[2] <= 0;
-        registers[3] <= 0;
+        if (reset) begin    // reset the registers
+            registers[0] <= 0;
+            registers[1] <= 0;
+            registers[2] <= 0;
+            registers[3] <= 0;
+        end
+
+        else if (write_en) begin
+            registers[write_reg] <= write_data;
+        end
     end
 
-    else if (write_en) begin
-        registers[write_reg] <= write_data;
+    // read logic
+    always_comb begin
+        read_data1 = registers[read_reg1];
+        read_data2 = registers[read_reg2];
     end
-end
-
-// read logic
-always_comb begin
-    read_data1 = registers[read_reg1];
-    read_data2 = registers[read_reg2];
-end
 
 endmodule
