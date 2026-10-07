@@ -34,8 +34,7 @@ module register_file_tb;
     initial begin
 
         
-        // Test 1: Reset
-        
+        // Initial values
         reset      = 1;
         write_en   = 0;
         write_reg  = 2'b00;
@@ -43,13 +42,16 @@ module register_file_tb;
         read_reg1  = 2'b00;
         read_reg2  = 2'b00;
 
-        #5;  // First rising edge: reset registers
-        #1;  // Move past rising edge
 
-        // Select R0 for reading
+        
+        // Test 1: Reset
+
+        @(posedge clk);
+        #1;
+
         read_reg1 = 2'b00;
+        #1;
 
-        // Check that R0 was reset to 0
         if (read_data1 == 8'd0) begin
             $display("RESET: PASS");
         end
@@ -58,21 +60,25 @@ module register_file_tb;
         end
 
 
-        
+       
         // Test 2: Write 42 into R2
+
+        // Prepare inputs before rising edge
+        @(negedge clk);
 
         reset      = 0;
         write_en   = 1;
         write_reg  = 2'b10;
         write_data = 8'd42;
 
-        @(posedge clk);  // Next rising edge
-        #1;  // Move past rising edge
+        // Write occurs here
+        @(posedge clk);
+        #1;
 
-        // Select R2 for reading
+        // Read R2
         read_reg1 = 2'b10;
+        #1;
 
-        // Check that R2 contains 42
         if (read_data1 == 8'd42) begin
             $display("WRITE R2: PASS");
         end
@@ -83,16 +89,21 @@ module register_file_tb;
 
         // Test 3: Disable writing
 
+        @(negedge clk);
+
         write_en   = 0;
         write_reg  = 2'b10;
         write_data = 8'd99;
 
-        #9;  // Next rising edge
-        #1;  // Move past rising edge
+        // No write should occur because write_en = 0
+        @(posedge clk);
+        #1;
 
-        // R2 should still contain 42 because write_en was 0
+        // Read R2
         read_reg1 = 2'b10;
+        #1;
 
+        // R2 should still contain 42
         if (read_data1 == 8'd42) begin
             $display("WRITE DISABLE: PASS");
         end
@@ -103,27 +114,32 @@ module register_file_tb;
 
         // Test 4: Write 25 into R1
 
+        @(negedge clk);
 
         write_en   = 1;
         write_reg  = 2'b01;
         write_data = 8'd25;
 
-        #9;  // Next rising edge
-        #1;  // Move past rising edge
+        // Write occurs here
+        @(posedge clk);
+        #1;
 
 
-      
-        // Test 5: Two read ports
-       
 
-        // Read R1 and R2 simultaneously
+        // Test 5: Dual read
+
+        // Read R1 and R2 at the same time
         read_reg1 = 2'b01;
         read_reg2 = 2'b10;
 
-        // R1 should contain 25
-        // R2 should still contain 42
-        if (read_data1 == 8'd25 && read_data2 == 8'd42) begin
+        // Allow combinational read logic to update
+        #1;
+
+        if (read_data1 == 8'd25 &&
+            read_data2 == 8'd42) begin
+
             $display("DUAL READ: PASS");
+
         end
         else begin
             $display("DUAL READ: FAIL");
