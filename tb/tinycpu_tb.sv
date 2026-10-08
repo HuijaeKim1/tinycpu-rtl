@@ -28,9 +28,11 @@ module tinycpu_tb;
 
     initial begin
 
-        // ----------------------------------------
-        // Initialize CPU
-        // ----------------------------------------
+        // Record waveforms for GTKWave
+        $dumpfile("tinycpu.vcd");
+        $dumpvars(0, tinycpu_tb);
+
+        
         reset = 1;
 
         // Initialize instruction memory to HALT
@@ -38,9 +40,8 @@ module tinycpu_tb;
             dut.instruction_memory[i] = 8'b00000000;
         end
 
-        // ----------------------------------------
+        
         // Load test program
-        // ----------------------------------------
 
         // Address 0: ADD R0, R1
         dut.instruction_memory[0] = encode(3'b001, 2'd0, 2'd1);
@@ -69,9 +70,8 @@ module tinycpu_tb;
         // Address 20: HALT (jump destination)
         dut.instruction_memory[20] = encode(3'b000, 2'd0, 2'd0);
 
-        // ----------------------------------------
+        
         // Release reset and initialize registers
-        // ----------------------------------------
 
         // Wait for a rising edge to reset the PC
         // and register file.
@@ -89,9 +89,8 @@ module tinycpu_tb;
         @(negedge clk);
         reset = 0;
 
-        // ----------------------------------------
+
         // TEST 1: ADD R0, R1
-        // ----------------------------------------
         @(posedge clk);
         #1;
 
@@ -100,9 +99,8 @@ module tinycpu_tb;
         else
             $display("ADD: FAIL (got %d)", dut.rf_inst.registers[0]);
 
-        // ----------------------------------------
+
         // TEST 2: SUB R0, R1
-        // ----------------------------------------
         @(posedge clk);
         #1;
 
@@ -111,10 +109,9 @@ module tinycpu_tb;
         else
             $display("SUB: FAIL (got %d)", dut.rf_inst.registers[0]);
 
-        // ----------------------------------------
+
         // TEST 3: AND R0, R1
         // 12 & 10 = 8
-        // ----------------------------------------
         @(posedge clk);
         #1;
 
@@ -123,10 +120,9 @@ module tinycpu_tb;
         else
             $display("AND: FAIL (got %d)", dut.rf_inst.registers[0]);
 
-        // ----------------------------------------
+        
         // TEST 4: OR R0, R1
         // 8 | 10 = 10
-        // ----------------------------------------
         @(posedge clk);
         #1;
 
@@ -135,10 +131,9 @@ module tinycpu_tb;
         else
             $display("OR: FAIL (got %d)", dut.rf_inst.registers[0]);
 
-        // ----------------------------------------
+ 
         // TEST 5: STORE R0, [R3]
         // memory[20] = 10
-        // ----------------------------------------
         @(posedge clk);
         #1;
 
@@ -148,10 +143,9 @@ module tinycpu_tb;
             $display("STORE: FAIL (got %d)",
                      dut.data_mem_inst.memory[20]);
 
-        // ----------------------------------------
+
         // TEST 6: LOAD R2, [R3]
         // R2 = memory[20] = 10
-        // ----------------------------------------
         @(posedge clk);
         #1;
 
@@ -161,10 +155,9 @@ module tinycpu_tb;
             $display("LOAD: FAIL (got %d)",
                      dut.rf_inst.registers[2]);
 
-        // ----------------------------------------
+
         // TEST 7: JUMP R3
         // PC should become 20
-        // ----------------------------------------
         @(posedge clk);
         #1;
 
@@ -173,10 +166,9 @@ module tinycpu_tb;
         else
             $display("JUMP: FAIL (PC = %d)", dut.pc);
 
-        // ----------------------------------------
+
         // TEST 8: HALT
         // PC should remain 20
-        // ----------------------------------------
         @(posedge clk);
         #1;
 
