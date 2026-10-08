@@ -2,6 +2,7 @@ module program_counter(
     input logic clk,
     input logic jump,
     input logic reset,
+    input logic pc_enable,
     input logic [7:0] jump_address,
     output logic [7:0] pc
 );
@@ -13,13 +14,17 @@ module program_counter(
             pc <= 0;
         end
 
-        // Jump to the specified address
-        else if (jump) begin
-            pc <= jump_address;
-        end
+        // Only update PC when enabled
+        else if (pc_enable) begin
 
-        else begin
-            pc <= pc + 1;
+            if (jump) begin
+                pc <= jump_address;
+            end
+
+            else begin
+                pc <= pc + 1;
+            end
+
         end
 
     end
